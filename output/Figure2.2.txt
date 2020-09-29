@@ -1,0 +1,52 @@
+Loc/Block   Source   Statement  Parameter           
+1000   0    COPY     START      1000                           
+1000   0    FIRST    STL        RETADR                         
+1003   0    CLOOP    JSUB       RDREC                          
+1006   0             LDA        LENGTH                         
+1009   0             COMP       ZERO                           
+100C   0             JEQ        ENDFIL                         
+100F   0             JSUB       WRREC                          
+1012   0             J          CLOOP                          
+1015   0    ENDFIL   LDA        EOF                            
+1018   0             STA        BUFFER                         
+101B   0             LDA        THREE                          
+101E   0             STA        LENGTH                         
+1021   0             JSUB       WRREC                          
+1024   0             LDL        RETADR                         
+1027   0             RSUB                                      
+102A   0    EOF      BYTE       C'EOF'                         
+102D   0    THREE    WORD       3                              
+1030   0    ZERO     WORD       0                              
+1033   0    RETADR   RESW       1                              
+1036   0    LENGTH   RESW       1                              
+1039   0    BUFFER   RESB       4096                           
+	.			
+	.	SUBROUTINE TO READ RECORD INTO BUFFER 
+	.			
+2039   0    RDREC    LDX        ZERO                           
+203C   0             LDA        ZERO                           
+203F   0    RLOOP    TD         INPUT                          
+2042   0             JEQ        RLOOP                          
+2045   0             RD         INPUT                          
+2048   0             COMP       ZERO                           
+204B   0             JEQ        EXIT                           
+204E   0             STCH       BUFFER,X                       
+2051   0             TIX        MAXLEN                         
+2054   0             JLT        RLOOP                          
+2057   0    EXIT     STX        LENGTH                         
+205A   0             RSUB                                      
+205D   0    INPUT    BYTE       X'F1'                          
+205E        MAXLEN   WORD       4096                           
+		.	
+		.	SUBROUTINE TO WRITE RECORD FROM BUFFER 
+		.	
+2061   0    WRREC    LDX        ZERO                           
+2064   0    WLOOP    TD         OUTPUT                         
+2067   0             JEQ        WLOOP                          
+206A   0             LDCH       BUFFER,X                       
+206D   0             WD         OUTPUT                         
+2070   0             TIX        LENGTH                         
+2073   0             JLT        WLOOP                          
+2076   0             RSUB                                      
+2079   0    OUTPUT   BYTE       X'05'                          
+                     END        FIRST                          
